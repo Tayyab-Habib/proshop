@@ -8,6 +8,8 @@ import {useSelector, useDispatch} from 'react-redux'
 import {logout} from '../slices/authSlice'
 import { useLogoutMutation } from '../slices/usersApiSlice'
 import { toast } from 'react-toastify'
+import { resetCart} from '../slices/cartSlice'
+import SearchBox from '../components/SearchBox'
 
 
 
@@ -24,6 +26,7 @@ const Header = () => {
     try {
       await logoutFunction().unwrap()
       dispatch(logout())
+      dispatch (resetCart())
       navigate('/')
     } catch (err) {
       toast.error(err?.data?.message || err.error)
@@ -42,6 +45,7 @@ const Header = () => {
                 <Navbar.Toggle aria-controls='basic-navbar-nav'></Navbar.Toggle>
                 <Navbar.Collapse id='basic-navbar-nav'>
                     <Nav className='ms-auto'>
+                      <SearchBox/>
                       <LinkContainer to='/cart'>
                       <Nav.Link>
                         <FaShoppingCart/> Cart
@@ -65,6 +69,27 @@ const Header = () => {
                         <FaUser/> Sign In
                         </Nav.Link>
                       </LinkContainer>)}
+
+                       {userInfo && userInfo.isAdmin && (
+
+                        <NavDropdown title='Admin' id='adminmenu'>
+                          <LinkContainer to="/admin/listproducts">
+                            <NavDropdown.Item>Products</NavDropdown.Item>
+                          </LinkContainer>
+
+                          <LinkContainer to="/admin/listorders">
+                            <NavDropdown.Item>Orders</NavDropdown.Item>
+                          </LinkContainer>
+
+                          <LinkContainer to="/admin/listusers">
+                            <NavDropdown.Item>Users</NavDropdown.Item>
+                          </LinkContainer>
+                        </NavDropdown>
+                        
+                       )
+                      }
+                      
+                      
                       
                     </Nav>
                 </Navbar.Collapse>

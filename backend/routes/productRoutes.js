@@ -1,6 +1,11 @@
 import express from 'express'
 const router = express.Router()
-import { getProducts,getProductsById } from '../controllers/productController.js'
+import { createProduct, getProducts,getProductsById, updateProduct, deleteProduct, createProductReview, getTopProducts } from '../controllers/productController.js'
+
+import { protect, admin} from '../middleware/authMiddleware.js'
+import checkObjectId from '../middleware/checkValidObjectId.js'
+
+
 // After adding the controller we can do something like this 
 // router.get('/',asyncHandeler(async(req,res)=>{
 //     const products = await Product.find({})
@@ -21,6 +26,8 @@ import { getProducts,getProductsById } from '../controllers/productController.js
 
 
 
-router.route('/').get(getProducts)
-router.route('/:id').get(getProductsById)
+router.route('/').get(getProducts).post(protect, admin, createProduct)
+router.route('/top').get (getTopProducts)
+router.route('/:id').get( checkObjectId,getProductsById).put(protect, admin,checkObjectId, updateProduct).delete(protect, admin,checkObjectId, deleteProduct )
+router.route('/:id/reviews').post(protect, checkObjectId, createProductReview)
 export default router

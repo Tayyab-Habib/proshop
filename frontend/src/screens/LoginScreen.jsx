@@ -36,6 +36,10 @@ const LoginScreen = () => {
       const res = await login({ email, password }).unwrap()
       dispatch(setCredentials({...res,}))
       navigate(redirect)
+      if(res){
+
+        toast.success("Successfully Logged In")
+      }
     } catch (err) {
       toast.error(err?.data?.message || err.error)
     }

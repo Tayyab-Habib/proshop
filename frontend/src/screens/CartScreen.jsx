@@ -1,10 +1,10 @@
 import React from 'react'
 import { useDispatch, useSelector} from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
-import { Row, Col, ListGroup, Image, Form, Button, Card, FormControl } from 'react-bootstrap'
+import { Row, Col, ListGroup, Image,  Button, Card, FormControl } from 'react-bootstrap'
 import { FaTrash } from 'react-icons/fa'
 import Message from '../components/Message'
-import { useState } from 'react'
+
 import {addToCart, removeFromCart} from '../slices/cartSlice'
 
 const CartScreen = () => {

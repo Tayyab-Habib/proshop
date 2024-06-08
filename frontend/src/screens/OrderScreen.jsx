@@ -1,9 +1,9 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import { useGetOrderDetailsQuery, usePayOderMutation } from '../slices/ordersApiSlice'
-import { useNavigate,Link } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { Row, Form, Card, Button, NavLink, Col, ListGroup, Image,
+import { useGetOrderDetailsQuery, usePayOderMutation, useDeliverOrderMutation } from '../slices/ordersApiSlice'
+import { Link } from 'react-router-dom'
+import {  useSelector } from 'react-redux'
+import { Row,  Card, Button,  Col, ListGroup, Image,
 } from 'react-bootstrap'
 import Message from '../components/Message'
 import Loader from '../components/Loader'
@@ -14,15 +14,27 @@ const OrderScreen = () => {
     const { data:order ,refetch, isLoading, error } = useGetOrderDetailsQuery(orderId)
     
     const [ payOrder, { isLoading: LoadingPay, error: isPending } ] = usePayOderMutation()
+
+    const [deliverOrder , {isLoading: deilverLoading}] = useDeliverOrderMutation()
     const paymentTest = async ()=>{
         const res = await payOrder({ orderId, details: { payer:{}}})
         refetch()
         toast.success('Payment Successful')
     }
+
+    const deliverOrderHandler = async()=>{
+        try {
+           await deliverOrder(orderId) 
+           refetch()
+           toast.success('Order delivered')
+        } catch (error) {
+            toast.error(error?.data?.Message || error.message)
+        }
+    }
     const { userInfo } = useSelector((state) => state.auth)
   return (
     <>
-    { isLoading ? (<Loader/>) : error ? ( <Message variant='danger'/>) : (
+    { isLoading ? (<Loader/>) : error ? ( <Message variant='danger'>{error?.data?.message || error.error}</Message>) : (
         <>
         <h3>OrderId: {order._id}</h3>
         <Row>
@@ -117,6 +129,13 @@ const OrderScreen = () => {
                                 </ListGroup.Item>
                             )
                         }
+                        {deilverLoading && <Loader/>}
+
+                        {userInfo && userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                            <ListGroup.Item>
+                                <Button type = 'button' className='btn btn-black' onClick={deliverOrderHandler}>Mark as Delivered</Button>
+                            </ListGroup.Item>
+                        )}
                     </ListGroup>
                 </Card>
             </Col>
